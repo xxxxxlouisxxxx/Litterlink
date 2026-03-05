@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My LittleLink ♡</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+
+  <style>
+  /* ══════════════════════════════════════════════
+     PAGE BASE
+  ══════════════════════════════════════════════ */
+  body {
+    background-color: #F5EFE6;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Nunito', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ══════════════════════════════════════════════
+     STEPPED SYMMETRIC DECOR
+     Uses absolute positioning inside .decor-shell
+     which is sized to wrap snugly above the card.
+  ══════════════════════════════════════════════ */
+  .page-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  /* The decor shell sits above the card and provides
+     the coordinate space for absolute-positioned emojis */
+  .decor-shell {
+    position: relative;
+    width: 320px;
+    height: 130px;   /* expanded to fit bigger emojis */
+    flex-shrink: 0;
+  }
+
+  .decor-shell span {
+    position: absolute;
+    font-size: 1rem;
+    line-height: 1;
+    user-select: none;
+    font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    width: max-content;
+  }
+
+  /*
+    Stepped layout (image-accurate):
+
+    Layer 1 (outermost/highest):   ✨  ❤️              🤍  ✨
+    Layer 2 (mid / butterfly):         🦋          🦋
+    Layer 3 (inner / eyes):               🎈    🎈🤍
+    Center bottom:                            🦋
+
+    X-axis: card width = 320px, center = 160px
+    Steps inward:  outer ±150px → butterfly ±95px → eyes ±45px
+    Y-axis steps down:  row1=0px  row2=28px  row3=54px  nose=74px
+  */
+
+  /*
+    FINAL coordinate map (card width = 320px, center = 160px)
+
+    Row 0  y=0:    ✦(outer-L)          ❤️(L)   ❤️(R)         ✦(outer-R)
+    Row 1  y=22:              ✦(inner-L)    🦋(L)  🦋(R)  ✦(inner-R)
+    Row 2  y=46:                         ,        ,          ← pixel comma eyes
+    Row 3  y=64:                            🦋              ← black butterfly nose
+
+    X positions (left / right):
+      sparkle-outer :  L=0px   R=0px
+      heart         :  L=52px  R=52px
+      sparkle-inner :  L=60px  R=60px
+      butterfly     :  L=88px  R=88px
+      eye (comma)   :  L=120px R=120px
+  */
+
+  /* ── Layer 0: Sparkles OUTSIDE hearts ── */
+  .d-spark-ol { top:  45px; left:   40px;  font-size: 3rem; }
+  .d-spark-or { top:  45px; right:  40px;  font-size: 0.72rem; }
+  .d-spark-il { top: 52px; left:  32px;  font-size: 3rem; }
+  .d-spark-ir { top: 52px; right: 32px;  font-size: 0.72rem; }
+
+  /* ── Layer 1: Hearts ── */
+  .d-heart-l  { top:  30px; left:  57px;  font-size: 0.9rem; }
+  .d-heart-r  { top:  30px; right: 57px;  font-size: 0.9rem; }
+
+  /* ── Layer 2: Butterflies (orange #D67B3F) ── */
+  .d-btn-l    { top: 54px; left:  82px;  font-size: 1.1rem; }
+  .d-btn-r    { top: 54px; right: 82px;  font-size: 1.1rem; }
+
+  /* ── Layer 3: Balloon eyes — black, symmetric ── */
+  .d-eye-l,
+  .d-eye-r {
+    top: 85px;
+    font-size: 1rem;
+    filter: grayscale(1) brightness(0);
+    line-height: 1;
+  }
+  .d-eye-l { left:  100px; }
+  .d-eye-r { right: 100px; }
+
+  /* ── Center bottom: black butterfly nose ── */
+  .d-nose {
+    top: 105px; left: 50%; transform: translateX(-50%);
+    font-size: 0.75rem; filter: grayscale(1) brightness(0);
+  }
+
+  /* Colour helpers */
+  .c-heart { color: #A52A2A; }
+  .c-spark { color: #d4a017; }
+  /* Butterfly rendered via emoji + color overlay to hit #D67B3F */
+  .c-btn   {
+    filter: sepia(1) saturate(4) hue-rotate(5deg) brightness(0.88);
+    color: #D67B3F;
+  }
+
+  /* ══════════════════════════════════════════════
+     MAIN CARD
+  ══════════════════════════════════════════════ */
+  .card {
+    width: 320px;
+    background: #FCE8D5;
+    border-radius: 60px;
+    padding: 36px 28px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 12px 48px rgba(160, 100, 60, 0.12),
+                0  2px  8px rgba(160, 100, 60, 0.07);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Profile ── */
+  .profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .avatar-circle {
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    background: #e8cdb5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .avatar {
+    width: 78px; height: 78px;
+    border-radius: 50%; object-fit: cover;
+  }
+  .avatar-circle.no-img::after {
+    content: "🦋";
+    font-size: 2.2rem;
+    filter: sepia(0.4) saturate(2.8) hue-rotate(-5deg) brightness(0.88);
+  }
+
+  .username {
+    font-size: 1.2rem; font-weight: 800;
+    color: #2b1d0e; letter-spacing: 0.01em;
+    margin-top: 4px;
+  }
+  .bio {
+    font-size: 0.75rem; color: #6b4e2e;
+    text-align: center; line-height: 1.65; font-weight: 600;
+  }
+
+  /* ── Link Buttons ── */
+  .links {
+    display: flex; flex-direction: column;
+    gap: 9px; width: 100%; margin-top: 8px;
+  }
+  .btn {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; width: 100%; padding: 11px 20px;
+    border-radius: 50px; border: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem; font-weight: 700;
+    text-decoration: none; letter-spacing: 0.02em; cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+  }
+  .btn:hover { transform: translateY(-2px) scale(1.015); filter: brightness(1.05); }
+  .btn:active { transform: scale(0.98); }
+  .btn-icon { font-size: 1rem; }
+  .btn-icon img {
+    width: 1.1rem;
+    height: 1.1rem;
+    vertical-align: middle;
+    display: inline-block;
+  }
+  /* Invert icon to white for dark buttons */
+  .btn-icon-white img { filter: brightness(0) invert(1); }
+
+  .btn-pink   { background: #dfa3b0; color: #4a1525; }
+  .btn-peach  { background: #d4b896; color: #3d2210; }
+  .btn-yellow { background: #e8cc6a; color: #3d2a00; }
+  .btn-brown  { background: #b8845a; color: #fff5eb; }
+  .btn-cream  { background: #f5ede0; color: #4a3020; border: 1.5px solid #d4c0a5; }
+  .btn-dark   { background: #2d1a0a; color: #f5ede0; }
+
+  .footer {
+    margin-top: 14px; font-size: 0.68rem;
+    color: #9e7850; font-weight: 600; letter-spacing: 0.05em;
+  }
+
+  /* ══════════════════════════════════════════════
+     FIXED SIDE DECORATIONS — animated floating
+  ══════════════════════════════════════════════ */
+  .side-decor {
+    position: fixed;
+    top: 50%; transform: translateY(-50%);
+    display: flex; flex-direction: column;
+    align-items: center; gap: 22px;
+    z-index: 300; pointer-events: none;
+    font-size: 1.15rem;
+  }
+  .side-left  { left: 10px; }
+  .side-right { right: 10px; }
+
+  .side-decor span { display: block; line-height: 1; }
+
+  /* Each item gets its own float timing */
+  .sf-1 { animation: sideFloat 3.0s ease-in-out infinite 0.0s; }
+  .sf-2 { animation: sideFloat 3.4s ease-in-out infinite 0.5s; }
+  .sf-3 { animation: sideFloat 2.8s ease-in-out infinite 1.0s; }
+  .sf-4 { animation: sideFloat 3.6s ease-in-out infinite 0.3s; }
+  .sf-5 { animation: sideFloat 3.1s ease-in-out infinite 0.8s; }
+
+  @keyframes sideFloat {
+    0%, 100% { transform: translateY(0px);   opacity: 0.75; }
+    50%       { transform: translateY(-9px);  opacity: 1;    }
+  }
+
+  .s-heart { color: #8b1a1a; }
+  .s-spark { color: #d4a017; }
+
+  /* ══════════════════════════════════════════════
+     MOBILE FIX — scale decor shell on small screens
+  ══════════════════════════════════════════════ */
+  @media (max-width: 480px) {
+    .decor-shell {
+      transform: scale(0.82);
+      transform-origin: center bottom;
+    }
+  }
+  </style>
+</head>
+<body>
+
+
+
+  <!-- ═══ PAGE CENTER ═══ -->
+  <div class="page-center">
+
+    <!-- 
+      STEPPED SYMMETRIC DECOR SHELL
+      ┌──────────────────────────────────────┐
+      │  ✨ ❤️                    ❤️ ✨       │  ← Layer 1 (outermost)
+      │  ✦        🦋          🦋       ✦     │  ← Layer 2
+      │               🎈    🎈               │  ← Layer 3 (eyes)
+      │                  🦋                  │  ← Nose center
+      └──────────────────────────────────────┘
+    -->
+    <div class="decor-shell">
+      <!-- Layer 1 — Hearts -->
+      <span class="d-heart-l c-heart" style="font-family: 'Cambria Math', 'STIX Two Math', 'DejaVu Math TeX Gyre', serif;">⎛⎝ </span>
+      <span class="d-heart-r c-heart" style="font-family: 'Cambria Math', 'STIX Two Math', 'DejaVu Math TeX Gyre', serif;">⎠⎞</span>
+      <!-- Layer 1 — Sparkles (outer pair + inner pair) -->
+      <span class="d-spark-ol c-spark">૮</span>
+      <span class="d-spark-or c-spark">ა</span>
+      <span class="d-spark-il c-spark">૮</span>
+      <span class="d-spark-ir c-spark">ა</span>
+      <!-- Layer 2 — Butterflies -->
+      <span class="d-btn-l c-btn">ʚɞ</span>
+      <span class="d-btn-r c-btn">ʚɞ</span>
+      <!-- Layer 3 — Balloon eyes (black) -->
+      <span class="d-eye-l">◕</span>
+      <span class="d-eye-r">◕˶</span>
+      <!-- Center nose -->
+      <span class="d-nose">⤙</span>
+    </div>
+
+    <!-- ═══ CARD ═══ -->
+    <div class="card">
+
+      <div class="profile">
+        <div class="avatar-circle">
+          <img src="threads.jpg" alt="Profile Picture" class="avatar"
+               onerror="this.style.display='none'; this.parentElement.classList.add('no-img')"/>
+        </div>
+        <h1 class="username">yuiching </h1>
+        <p class="bio">✦welcome to my little corner of my port✦<br/>dreamer · creator · butterfly<br/><br/>(╭ರ_•́) </p>
+      </div>
+
+      <div class="links">
+        <a href="https://www.instagram.com/_yuiching_/" target="_blank" class="btn btn-pink">
+          <span class="btn-icon">
+            <img src="https://cdn.simpleicons.org/instagram/4a1525" alt="Instagram"/>
+          </span> Instagram
+        </a>
+        <a href="#" class="btn btn-peach">
+          <span class="btn-icon">
+            <img src="LinkedIn_logo.png" alt="LinkedIn"/>
+          </span> LinkedIn
+        </a>
+        <a href="https://www.threads.com/@_yuiching_" target="_blank" class="btn btn-yellow">
+          <span class="btn-icon">
+            <img src="https://cdn.simpleicons.org/threads/3d2a00" alt="Threads"/>
+          </span> Threads
+        </a>
+        <a href="#"  class="btn btn-cream">
+          <span class="btn-icon">💌</span> Email Me
+        </a>
+      </div>
+
+      <p class="footer">⋆｡°*ੈ✩‧₊˚°⋆. made in 2026 © ⋆｡°*ੈ✩‧₊˚°⋆. </p>
+
+    </div><!-- /.card -->
+  </div><!-- /.page-center -->
+
+</body>
+</html>
